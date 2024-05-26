@@ -1,0 +1,436 @@
+                                                                   SQL- SELECT STATEMENT
+One of the most common tasks, when you work with the database, is to retrieve data from tables using the SELECT statement.
+
+The SELECT statement is one of the most complex statements in PostgreSQL. It has many clauses that you can use to form a flexible query.
+
+Due to its complexity, we will break it down into many shorter and easy-to-understand tutorials so that you can learn about each clause faster.
+
+The SELECT statement has the following clauses:
+
+Select distinct rows using DISTINCT operator.
+Sort rows using ORDER BY clause.
+Filter rows using WHERE clause.
+Select a subset of rows from a table using LIMIT or FETCH clause.
+Group rows into groups using GROUP BY clause.
+Filter groups using HAVING clause.
+Join with other tables using joins such as INNER JOIN, LEFT JOIN, FULL OUTER JOIN, CROSS JOIN clauses.
+Perform set operations using UNION, INTERSECT, and EXCEPT.
+In this tutorial, you are going to focus on the SELECTand FROM clauses.
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+1) Using PostgreSQL SELECT statement to query data from one column example
+This example uses the SELECT statement to find the first names of all customers from the customer table:
+SELECT first_name FROM customer;
+                                                 SELECT-Clause
+SELECT
+   first_name,
+   last_name,
+   email
+FROM
+   customer;
+
+SELECT 
+   first_name || ' ' || last_name,
+   email
+FROM 
+   customer;
+
+SELECT 
+   first_name, 
+   last_name AS surname
+FROM customer;
+-----------------------------------------------
+                               ORDER BY-Clause
+SELECT                                                                              
+  first_name, 
+  last_name 
+FROM 
+  customer 
+ORDER BY 
+  first_name ASC;
+
+SELECT 
+  first_name, 
+  last_name 
+FROM 
+  customer 
+ORDER BY 
+  last_name DESC;
+
+SELECT 
+  first_name, 
+  last_name 
+FROM 
+  customer 
+ORDER BY 
+  first_name ASC, 
+  last_name DESC;
+
+SELECT 
+  first_name, 
+  LENGTH(first_name) len 
+FROM 
+  customer 
+ORDER BY 
+  len DESC;
+--------------------------------------------------------------
+                                       nulls FIRST/LAST-Clause
+SELECT 
+  num 
+FROM 
+  sort_demo 
+ORDER BY 
+  num NULLS FIRST;
+
+SELECT 
+  num 
+FROM 
+  sort_demo 
+ORDER BY 
+  num DESC NULLS LAST;
+----------------------------------------------------------------
+                                    DISTINCT
+SELECT DISTINCT
+  rental_rate
+FROM
+  film
+ORDER BY
+  rental_rate;
+-------------------------------------------------------------------
+                                 WHERE-Clause
+SELECT 
+  last_name, 
+  first_name 
+FROM 
+  customer 
+WHERE 
+  first_name = 'Jamie';
+
+SELECT 
+  last_name, 
+  first_name 
+FROM 
+  customer 
+WHERE 
+  first_name = 'Jamie' 
+  AND last_name = 'Rice';
+
+SELECT 
+  first_name, 
+  last_name 
+FROM 
+  customer 
+WHERE 
+  last_name = 'Rodriguez' 
+  OR first_name = 'Adam';
+
+SELECT 
+  first_name, 
+  last_name 
+FROM 
+  customer 
+WHERE 
+  first_name IN ('Ann', 'Anne', 'Annie');
+
+SELECT 
+  first_name, 
+  last_name 
+FROM 
+  customer 
+WHERE 
+  first_name LIKE 'Ann%';
+
+SELECT 
+  first_name, 
+  LENGTH(first_name) name_length 
+FROM 
+  customer 
+WHERE 
+  first_name LIKE 'A%' 
+  AND LENGTH(first_name) BETWEEN 3 
+  AND 5 
+ORDER BY 
+  name_length;
+
+SELECT 
+  first_name, 
+  last_name 
+FROM 
+  customer 
+WHERE 
+  first_name LIKE 'Bra%' 
+  AND last_name <> 'Motley';
+--------------------------------------------------------------------------------------------
+                                                                  AND-Operator
+SELECT 
+  title, 
+  length, 
+  rental_rate 
+FROM 
+  film 
+WHERE 
+  length > 180 
+  AND rental_rate < 1;
+-----------------------------------------------------------------------------------------------
+                                                                       OR-Operator
+SELECT 
+  title, 
+  rental_rate 
+FROM 
+  film 
+WHERE 
+  rental_rate = 0.99 OR 
+  rental_rate = 2.99;
+-----------------------------------------------------------------------------------------------------
+                                                                         LIMIT-Clause
+SELECT 
+  film_id, 
+  title, 
+  release_year 
+FROM 
+  film 
+ORDER BY 
+  film_id 
+LIMIT 
+  5;
+
+SELECT 
+  film_id, 
+  title, 
+  release_year 
+FROM 
+  film 
+ORDER BY 
+  film_id 
+LIMIT 4 OFFSET 3;
+
+SELECT                                      LIMIT OFFSET-To get top/bottom N rows
+  film_id, 
+  title, 
+  rental_rate 
+FROM 
+  film 
+ORDER BY 
+  rental_rate DESC 
+LIMIT 
+  10;
+-----------------------------------------------------------------------------------------------------
+                                                                    FETCH-Clause
+SELECT
+    film_id,
+    title
+FROM
+    film
+ORDER BY
+    title 
+FETCH FIRST ROW ONLY;
+
+SELECT
+    film_id,
+    title
+FROM
+    film
+ORDER BY
+    title 
+FETCH FIRST 5 ROW ONLY;
+
+SELECT
+    film_id,
+    title
+FROM
+    film
+ORDER BY
+    title 
+OFFSET 5 ROWS 
+FETCH FIRST 5 ROW ONLY; 
+---------------------------------------------------------------------------------------------------------------------------
+                                                                              IN-Operator
+SELECT
+  film_id, 
+  title 
+FROM
+  film 
+WHERE
+  film_id in (1, 2, 3);
+
+SELECT 
+  film_id, 
+  title 
+FROM 
+  film 
+WHERE 
+  film_id = 1 
+  OR film_id = 2 
+  OR film_id = 3;
+
+SELECT 
+  first_name, 
+  last_name
+FROM 
+  actor 
+WHERE 
+  last_name IN ('Allen', 'Chase', 'Davis') 
+ORDER BY 
+  last_name;
+
+SELECT 
+  payment_id, 
+  amount, 
+  payment_date 
+FROM 
+  payment 
+WHERE 
+  payment_date::date IN ('2007-02-15', '2007-02-16');
+
+SELECT 
+  film_id, 
+  title 
+FROM 
+  film 
+WHERE 
+  film_id NOT IN (1, 2, 3) 
+ORDER BY 
+  film_id;
+
+SELECT 
+  film_id, 
+  title 
+FROM 
+  film 
+WHERE 
+  film_id <> 1 
+  AND film_id <> 2 
+  AND film_id <> 3 
+ORDER BY 
+  film_id;
+---------------------------------------------------------------------------------------------------------------------------------------------------
+                                                                                                                             BETWEEN-Operator
+SELECT 
+  payment_id, 
+  amount 
+FROM 
+  payment 
+WHERE 
+  payment_id BETWEEN 17503 AND 17505 
+ORDER BY 
+  payment_id;
+
+SELECT 
+  payment_id, 
+  amount 
+FROM 
+  payment 
+WHERE 
+  payment_id NOT BETWEEN 17503 AND 17505 
+ORDER BY 
+  payment_id;
+
+SELECT 
+  payment_id, 
+  amount, 
+  payment_date 
+FROM 
+  payment 
+WHERE 
+  payment_date BETWEEN '2007-02-15' AND '2007-02-20' 
+  AND amount > 10 
+ORDER BY 
+  payment_date;
+---------------------------------------------------------------------------------------------------------------------------
+                                                                                  LIKE-Operator
+SELECT 
+  first_name, 
+  last_name 
+FROM 
+  customer 
+WHERE 
+  first_name LIKE 'Jen%';
+
+SELECT 
+  first_name, 
+  last_name 
+FROM 
+  customer 
+WHERE 
+  first_name LIKE '%er%' 
+ORDER BY 
+  first_name;
+
+SELECT 
+  first_name, 
+  last_name 
+FROM 
+  customer 
+WHERE 
+  first_name LIKE '_her%' 
+ORDER BY 
+  first_name;
+
+SELECT 
+  first_name, 
+  last_name 
+FROM 
+  customer 
+WHERE 
+  first_name NOT LIKE 'Jen%' 
+ORDER BY 
+  first_name;
+
+SELECT 
+  first_name, 
+  last_name 
+FROM 
+  customer 
+WHERE 
+  first_name ILIKE 'BAR%';
+
+Operator	Equivalent
+~~	LIKE
+~~*	ILIKE
+!~~	NOT LIKE
+!~~*	NOT ILIKE
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+IS NULL operator
+To check if a value is NULL or not, you cannot use the equal to (=) or not equal to (<>) operators. Instead, you use the IS NULL operator.
+
+Here’s the basic syntax of the IS NULL operator:
+value IS NULL
+Code language: PHP (php)
+The IS NULL operator returns true if the value is NULL or false otherwise.
+To negate the IS NULL operator, you use the IS NOT NULL operator:
+value IS NOT NULL
+Code language: PHP (php)
+The IS NOT NULL operator returns true if the value is not NULL or false otherwise.
+
+To learn how to deal with NULL in sorting, check out the ORDER BY tutorial.
+
+PostgreSQL offers some useful functions to handle NULL effectively such as NULLIF, ISNULL, and COALESCE.
+
+To ensure that a column does not contain NULL, you use the NOT NULL constraint.
+
+PostgreSQL IS NULL operator examples
+We’ll use the address table from the sample database:
+
+address table
+Please note that the psql program displays NULL as an empty string by default. To change how psql shows NULL in the terminal, you can use the command: \pset null null. It will display NULL as null.
+
+1) Basic IS NULL operator example
+The following example uses the IS NULL operator to find the addresses from the address table that the address2 column contains NULL
+
+SELECT 
+  address, 
+  address2 
+FROM 
+  address 
+WHERE 
+  address2 IS NULL;
+
+SELECT 
+  address, 
+  address2 
+FROM 
+  address 
+WHERE 
+  address2 IS NOT NULL;
+
+
